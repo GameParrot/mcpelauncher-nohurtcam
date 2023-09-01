@@ -1,5 +1,5 @@
 #include <dlfcn.h>
-void stubbedHc() {};
+int stubbedHc() {return 0;};
 void __attribute__ ((visibility ("default"))) mod_preinit() {
     int (*mcpelauncher_preinithook)(const char *, void *, void **) = (int (*)(const char *, void *, void **))dlsym(dlopen("libmcpelauncher_mod.so", 0), "mcpelauncher_preinithook");
     mcpelauncher_preinithook("_ZNK16VanillaCameraAPI25tryGetDamageBobParametersE8WeakRefTI15EntityRefTraitsEf", stubbedHc, NULL); // 1.19.40-
