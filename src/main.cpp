@@ -1,4 +1,5 @@
 #include "menu.hpp"
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <dlfcn.h>
@@ -7,6 +8,7 @@
 #include <libhat.hpp>
 #include <link.h>
 #include <memory>
+#include <optional>
 #include <print>
 #include <span>
 #include <stdlib.h>
@@ -74,13 +76,13 @@ extern "C" [[gnu::visibility("default")]] void mod_init() {
     auto VanillaCameraAPI_typeinfo_name             = hat::find_pattern(range1, hat::object_to_signature("16VanillaCameraAPI")).get();
     auto VanillaCameraAPI_typeinfo                  = hat::find_pattern(range2, hat::object_to_signature(VanillaCameraAPI_typeinfo_name)).get() - sizeof(void*);
     auto VanillaCameraAPI_vtable                    = hat::find_pattern(range2, hat::object_to_signature(VanillaCameraAPI_typeinfo)).get() + sizeof(void*);
-    auto VanillaCameraAPI_tryGetDamageBobParameters = reinterpret_cast<float (**)(void**, void*, float)>(VanillaCameraAPI_vtable) + 2;
+    auto VanillaCameraAPI_tryGetDamageBobParameters = reinterpret_cast<std::optional<std::array<float, 3>> (**)(void**, void*, float)>(VanillaCameraAPI_vtable) + 2;
 
     static auto VanillaCameraAPI_tryGetDamageBobParameters_orig = *VanillaCameraAPI_tryGetDamageBobParameters;
 
-    *VanillaCameraAPI_tryGetDamageBobParameters = [](void** self, void* traits, float a) -> float {
+    *VanillaCameraAPI_tryGetDamageBobParameters = [](void** self, void* traits, float a) -> std::optional<std::array<float, 3>> {
         if (config.enable) {
-            return 0;
+            return std::nullopt;
         }
         return VanillaCameraAPI_tryGetDamageBobParameters_orig(self, traits, a);
     };
